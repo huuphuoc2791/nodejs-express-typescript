@@ -1,5 +1,5 @@
 {
-  "name": "webpack-express-typescript",
+  "name": "backend",
   "version": "1.0.0",
   "description": "Easy starter project for writing modern Express Applications using TypeScript, and Webpack",
   "private": true,
@@ -13,12 +13,6 @@
     "dev": " npm run build && npm start"
   },
   "main": "",
-  "keywords": [
-    "Easy",
-    "TypeScript",
-    "Starter",
-    "Template"
-  ],
   "author": "Rick Hernandez",
   "license": "MIT",
   "devDependencies": {
