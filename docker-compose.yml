@@ -1,0 +1,70 @@
+version: '3.4'
+services:
+  mongo:
+    image: mongo
+    restart: on-failure
+    environment:
+      - MONGO_DATA_DIR=${PWD}/mongodata
+      - MONGO_LOG_DIR=${PWD}/mongodata/null
+    volumes:
+      - ${PWD}/mongodata:/data/db
+    ports:
+      - 27019:27017
+    logging:
+      driver: "none"
+  mariadb:
+    image: mariadb/server:10.3
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: hackathon
+      MYSQL_USER: hackathon
+      MYSQL_PASSWORD: 123456
+    restart: on-failure
+    ports:
+      - 3309:3306
+    volumes:
+      - ${PWD}/mariadb:/var/lib/mysql
+    logging:
+      driver: "none"
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    environment:
+      - PMA_HOST=mariadb
+    ports:
+      - 9876:80
+    links:
+      - mariadb:db
+    logging:
+      driver: "none"
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 7777:8080
+    links:
+      - mariadb:db
+    logging:
+      driver: "none"
+  web:
+    build: .
+    ports:
+     - 8080:8080
+    environment:
+     - MONGODB_URI=mongodb://mongo:27017/hackathon
+     - MYSQL_URI=mysql://root:123456@mariadb:3306/hackathon
+     - BASE_URL=http://web:8080
+     - PORT=8080
+     - MYSQL_DATABASE=hackathon
+     - MYSQL_USER=root
+     - MYSQL_PASSWORD=123456
+     - MYSQL_PORT=3306
+     - MYSQL_HOST=mariadb
+    links:
+     - mongo
+     - mariadb
+    depends_on: 
+     - mongo 
+    volumes:
+     - .:/starter
+     - /starter/node_modules
