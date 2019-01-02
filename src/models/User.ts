@@ -17,7 +17,7 @@ export interface IUserModel extends mongoose.Document {
     instagram: string,
     linkedin: string,
     steam: string,
-    tokens: string[],
+    tokens: any[],
 
     profile: {
         name: string,
@@ -52,7 +52,7 @@ export const UserSchema = new Schema({
     },
 }, {timestamps: true});
 
-UserSchema.pre('save', function save(next) {
+UserSchema.pre('save', function save(next: any) {
     const user = this;
     if (!user.isModified('password')) {
         return next();
@@ -61,17 +61,17 @@ UserSchema.pre('save', function save(next) {
         if (err) {
             return next(err);
         }
-        bcrypt.hash(user.password, salt, null, (err, hash) => {
+        bcrypt.hash((user as any).password, salt, null, (err, hash) => {
             if (err) {
                 return next(err);
             }
-            user.password = hash;
+            (user as any).password = hash;
             next();
         });
     });
 });
 
-UserSchema.methods.comparePassword = function comparePassword(candidatePassword, cb) {
+UserSchema.methods.comparePassword = function comparePassword(candidatePassword: string, cb: any) {
     bcrypt.compare(candidatePassword, this.password, (err, isMatch) => {
         cb(err, isMatch);
     });
@@ -80,7 +80,7 @@ UserSchema.methods.comparePassword = function comparePassword(candidatePassword,
 /**
  * Helper method for getting user's gravatar.
  */
-UserSchema.methods.gravatar = function gravatar(size) {
+UserSchema.methods.gravatar = function gravatar(size: number) {
     if (!size) {
         size = 200;
     }

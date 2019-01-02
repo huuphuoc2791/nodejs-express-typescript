@@ -1,10 +1,10 @@
-import nodemailer from 'nodemailer';
+import * as nodemailer from 'nodemailer';
 
 /**
  * GET /contact
  * Contact form page.
  */
-export function getContact(req, res) {
+export function getContact(req: any, res: any) {
     const unknownUser = !(req.user);
     console.log('contact|getContact', req.user);
     res.render('contact', {
@@ -17,7 +17,7 @@ export function getContact(req, res) {
  * POST /contact
  * Send a contact form via Nodemailer.
  */
-export function postContact(req, res) {
+export function postContact(req: any, res: any) {
     let fromName;
     let fromEmail;
     if (!req.user) {

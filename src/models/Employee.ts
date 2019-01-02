@@ -1,4 +1,4 @@
-export function employeeModel(sequelize, type) {
+export function employeeModel(sequelize: any, type: any) {
 
     return sequelize.define('employees', {
         id: {

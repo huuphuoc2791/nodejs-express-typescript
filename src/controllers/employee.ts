@@ -1,7 +1,7 @@
-import faker from 'faker';
+import * as faker from 'faker';
 import {Employee} from '../config/sequelize';
 
-export function generateEmployee(req, res) {
+export function generateEmployee(req: any, res: any) {
     const firstName = faker.name.firstName();
     const lastName = faker.name.lastName();
     const email = faker.internet.email().toLowerCase();
@@ -20,39 +20,35 @@ export function generateEmployee(req, res) {
         city,
         country,
         memberID,
-    })
-        .then((result) => {
-            console.log(result.toJSON());
-            res.json({status: 'success'});
-        })
-        .catch((err) => {
-            console.log('Error', err);
-        });
-}
-
-export function getListEmployee(req, res) {
-    Employee.findAll({limit: 100}).then((item) => {
-        // projects will be an array of Project instances with the specified name
-        if (item.length > 0) {
-            res.render('employee/list-employee', {item});
-        } else {
-            res.render('common/empty-employee-list');
-        }
+    }).then((result: any) => {
+        console.log(result.toJSON());
+        res.json({status: 'success'});
+    }).catch((err: any) => {
+        console.log('Error', err);
     });
 }
 
-export function getListEmployeeApi(req, res) {
-    Employee.findAll({limit: 100}).then((item) => {
-        // projects will be an array of Project instances with the specified name
-        res.json(item);
+export function getListEmployee(req: any, res: any) {
+    Employee.findAll({limit: 100}).then((item: any) => {
+        return res.json(item);
     });
 }
 
-export function getAddEmployee(req, res) {
-    res.render('employee/add-employee');
-}
+export function getEmployee(req: any, res: any) {
+    const {id} = req.params;
 
-export function postAddEmployee(req, res) {
+    Employee.findOne({
+        where: {
+            id,
+        },
+    }).then((employee: any) => {
+        res.json({status: 'success', employee});
+    }).catch((err: any) => {
+        console.log('employee|getEmployee', err);
+        res.json({status: 'failed'});
+    });
+}
+export function postAddEmployee(req: any, res: any) {
     const {
         firstName, lastName, email,
         phone, address, city, country, memberID,
@@ -79,31 +75,26 @@ export function postAddEmployee(req, res) {
         city,
         country,
         memberID,
-    }).then((employee) => {
+    }).then((employee: any) => {
         console.log(`Created employee has id = ${employee.id} successfully. `);
-        res.redirect('/employee-manage/list');
-    }).catch((err) => {
+    }).catch((err: any) => {
         console.log('Error when updating a employee.', err.errors[0].message);
-
-        req.flash('errors', {msg: err.errors[0].message});
-        res.redirect('/employee-manage/add');
     });
 }
 
-export function getUpdateEmployee(req, res) {
+export function getUpdateEmployee(req: any, res: any) {
     const {id} = req.params;
 
     Employee.findOne({
         where: {
             id,
         },
-    }).then((employee) => {
+    }).then((employee: any) => {
         console.log('employee|', employee);
-        res.render('employee/update-employee', {employee});
     });
 }
 
-export function postUpdateEmployee(req, res) {
+export function postUpdateEmployee(req: any, res: any) {
     const {id} = req.params;
     const {
         firstName, lastName, email,
@@ -119,8 +110,6 @@ export function postUpdateEmployee(req, res) {
     const errors = req.validationErrors();
 
     if (errors) {
-        req.flash('errors', errors);
-        return res.redirect(`/employee-manage/update/${id}`);
     }
     Employee.update({
         firstName,
@@ -133,13 +122,12 @@ export function postUpdateEmployee(req, res) {
         memberID,
     }, {where: {id}}).then(() => {
         console.log(`Created employee has id = ${id} successfully.`);
-        res.redirect('/employee-manage/list');
-    }).catch((err) => {
+    }).catch((err: any) => {
         console.log('Error when updating a employee.', err);
     });
 }
 
-export function postRemoveEmployee(req, res) {
+export function postRemoveEmployee(req: any, res: any) {
     const {id} = req.params;
     Employee.destroy({
         where: {
@@ -147,8 +135,8 @@ export function postRemoveEmployee(req, res) {
         },
     }).then(() => {
         console.log('Removed 1 employee from database has id:', id);
-        res.redirect('/employee-manage/list');
-    }).catch((err) => {
+    }).catch((err: any) => {
         console.log('Error when removing a employee. ', err);
     });
 }
+

@@ -13,8 +13,8 @@ const customerRouter = [
     },
     {
         http_method: 'get',
-        url: '/add',
-        params: [customerController.getAddCustomer],
+        url: '/get-customer',
+        params: [customerController.getCustomer],
     },
     {
         http_method: 'post',
@@ -27,18 +27,18 @@ const customerRouter = [
         params: [customerController.getUpdateCustomer],
     },
     {
-        http_method: 'post',
+        http_method: 'put',
         url: '/update/:id',
         params: [customerController.postUpdateCustomer],
     },
     {
-        http_method: 'get',
+        http_method: 'delete',
         url: '/remove/:id',
         params: [customerController.postRemoveCustomer],
     },
     {
         http_method: 'post',
-        url: '/generate-customer',
+        url: '/generate',
         params: [customerController.generateCustomer],
     },
 ];

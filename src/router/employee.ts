@@ -13,13 +13,8 @@ const employeeRouter = [
     },
     {
         http_method: 'get',
-        url: '/api',
-        params: [employeeController.getListEmployeeApi],
-    },
-    {
-        http_method: 'get',
         url: '/add',
-        params: [employeeController.getAddEmployee],
+        params: [employeeController.getEmployee],
     },
     {
         http_method: 'post',

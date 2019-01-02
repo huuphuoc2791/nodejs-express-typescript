@@ -1,4 +1,4 @@
-export function customerModel(sequelize, type) {
+export function customerModel(sequelize: any, type: any) {
     return sequelize.define('customers', {
         id: {
             type: type.INTEGER,

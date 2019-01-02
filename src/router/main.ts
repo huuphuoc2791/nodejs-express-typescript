@@ -1,23 +1,19 @@
 import * as userController from '../controllers/user';
 import * as contactController from '../controllers/contact';
-import * as homeController from '../controllers/home';
 import * as passportConfig from '../config/passport';
+import * as passport from 'passport';
 
 const mainRouter = [
     {
-        http_method: 'get',
+        http_method: 'post',
         url: '/',
-        params: [homeController.index],
-    },
-    {
-        http_method: 'get',
-        url: '/home',
-        params: [homeController.index],
-    },
-    {
-        http_method: 'get',
-        url: '/login',
-        params: [userController.getLogin],
+        params: [(req: any, res: any) => {
+            res.send('Rendering file')
+        }],
+    }, {
+        http_method: 'post',
+        url: '/get-profile',
+        params: [userController.postGetProfile],
     },
     {
         http_method: 'post',
@@ -25,7 +21,12 @@ const mainRouter = [
         params: [userController.postLogin],
     },
     {
-        http_method: 'get',
+        http_method: 'post',
+        url: '/google',
+        params: [userController.postGoogleLogin],
+    },
+    {
+        http_method: 'post',
         url: '/logout',
         params: [userController.logout],
     },
@@ -96,7 +97,7 @@ const mainRouter = [
     },
     {
         http_method: 'get',
-        url: '/generateUser',
+        url: '/generate-user',
         params: [userController.generateUser],
     },
 ];

@@ -1,7 +1,7 @@
-import faker from 'faker';
+import * as faker from 'faker';
 import {Customer} from '../config/sequelize';
 
-export function generateCustomer (req, res) {
+export function generateCustomer(req: any, res: any) {
     const firstName = faker.name.firstName();
     const lastName = faker.name.lastName();
     const email = faker.internet.email().toLowerCase();
@@ -21,31 +21,38 @@ export function generateCustomer (req, res) {
         country,
         memberID,
     })
-        .then((result) => {
+        .then((result: any) => {
             console.log(result.toJSON());
             res.json({status: 'success'});
         })
-        .catch((err) => {
+        .catch((err: any) => {
             console.log('Error', err);
         });
 }
 
-export function getListCustomer (req, res) {
-    Customer.findAll({limit: 100}).then((item) => {
-        // projects will be an array of Project instances with the specified name
-        if (item.length > 0) {
-            res.render('customer/list-customer', {item});
-        } else {
-            res.render('common/empty-customer-list');
-        }
+export function getListCustomer(req: any, res: any) {
+    Customer.findAll({limit: 100}).then((item: any) => {
+        return res.json(item);
     });
 }
 
-export function getAddCustomer (req, res) {
-    res.render('customer/add-customer');
+export function getCustomer(req: any, res: any) {
+    const {id} = req.params;
+
+    Customer.findOne({
+        where: {
+            id,
+        },
+    }).then((customer: any) => {
+        res.json({status: 'success', customer});
+    }).catch((err: any) => {
+        res.statusCode = 304;
+        console.log('customer|getCustomer', err);
+        res.json({status: 'failed'});
+    });
 }
 
-export function postAddCustomer (req, res) {
+export function postAddCustomer(req: any, res: any) {
     const {
         firstName, lastName, email,
         phone, address, city, country, memberID,
@@ -53,17 +60,14 @@ export function postAddCustomer (req, res) {
     req.assert('firstName', 'First Name cannot be blank').notEmpty();
     req.assert('lastName', 'Last Name cannot be blank').notEmpty();
     req.assert('email', 'Email is not valid').isEmail();
-    req.assert('phone', 'Phone cannot be blank').notEmpty();
     req.assert('address', 'Address cannot be blank').notEmpty();
-    req.assert('country', 'Country cannot be blank').notEmpty();
     req.assert('memberID', 'Member ID cannot be blank').notEmpty();
     const errors = req.validationErrors();
 
     if (errors) {
-        req.flash('errors', errors);
-        return res.redirect('/customer-manage/add');
+        console.log('customer|postAddCustomer', errors);
+        return res.json({status: 'failed', errors});
     }
-
     Customer.create({
         firstName,
         lastName,
@@ -73,28 +77,32 @@ export function postAddCustomer (req, res) {
         city,
         country,
         memberID,
-    }).then((customer) => {
+    }).then((customer: any) => {
         console.log(`Created customer has id = ${customer.id} successfully. `);
-        res.redirect('/customer-manage/list');
-    }).catch((err) => {
+        res.json({status: 'success', customer});
+        // res.redirect('/customer-manage/list');
+    }).catch((err: any) => {
         console.log('Error when updating a customer.', err);
+        res.json({status: 'error'});
     });
 }
 
-export function getUpdateCustomer (req, res) {
+export function getUpdateCustomer(req: any, res: any) {
     const {id} = req.params;
 
     Customer.findOne({
         where: {
             id,
         },
-    }).then((customer) => {
-        console.log('customer|', customer);
-        res.render('customer/update-customer', {customer});
+    }).then((customer: any) => {
+        res.json({status: 'success', customer});
+    }).catch((err: any) => {
+        console.log('customer|getUpdate', err);
+        res.json({status: 'failed'});
     });
 }
 
-export function postUpdateCustomer (req, res) {
+export function postUpdateCustomer(req: any, res: any) {
     const {id} = req.params;
     const {
         firstName, lastName, email,
@@ -103,15 +111,12 @@ export function postUpdateCustomer (req, res) {
     req.assert('firstName', 'First Name cannot be blank').notEmpty();
     req.assert('lastName', 'Last Name cannot be blank').notEmpty();
     req.assert('email', 'Email is not valid').isEmail();
-    req.assert('phone', 'Phone cannot be blank').notEmpty();
     req.assert('address', 'Address cannot be blank').notEmpty();
-    req.assert('country', 'Country cannot be blank').notEmpty();
     req.assert('memberID', 'Member ID cannot be blank').notEmpty();
     const errors = req.validationErrors();
 
     if (errors) {
-        req.flash('errors', errors);
-        return res.redirect(`/customer-manage/update/${id}`);
+        return res.json({status: 'failed', errors});
     }
     Customer.update({
         firstName,
@@ -122,15 +127,16 @@ export function postUpdateCustomer (req, res) {
         city,
         country,
         memberID,
-    }, {where: {id}}).then(() => {
-        console.log(`Created customer has id = ${id} successfully.`);
-        res.redirect('/customer-manage/list');
-    }).catch((err) => {
+    }, {where: {id}}).then((customer: any) => {
+        console.log(`Updated customer has id = ${id} successfully. `);
+        res.json({status: 'success', customer});
+    }).catch((err: any) => {
         console.log('Error when updating a customer.', err);
+        res.json({status: 'error'});
     });
 }
 
-export function postRemoveCustomer (req, res) {
+export function postRemoveCustomer(req: any, res: any) {
     const {id} = req.params;
     Customer.destroy({
         where: {
@@ -138,8 +144,9 @@ export function postRemoveCustomer (req, res) {
         },
     }).then(() => {
         console.log('Removed 1 customer from database has id:', id);
-        res.redirect('/customer-manage/list');
-    }).catch((err) => {
+        res.json({status: 'success'});
+    }).catch((err: any) => {
         console.log('Error when removing a customer. ', err);
+        res.json({status: 'failed'});
     });
 }
